@@ -1,0 +1,67 @@
+# Builds Msingi Accounting installers for Mac (Intel and Apple Silicon) and Windows, in the cloud.
+# Use: put this project in a PRIVATE GitHub repository, open the Actions tab, choose "Build installers", press Run workflow.
+# The installers appear as downloadable files at the bottom of the finished run.
+# The installers are NOT code signed. See COMMERCIAL_GUIDE.md for what that means and how to add signing later.
+name: Build installers
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: mac-intel
+            os: macos-15-intel
+            target: x86_64-apple-darwin
+          - name: mac-apple-silicon
+            os: macos-latest
+            target: aarch64-apple-darwin
+          - name: windows
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Install npm packages
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
+      - name: Run tests
+        shell: bash
+        run: |
+          for t in tests/*.test.ts; do echo "== $t"; node --experimental-strip-types "$t"; done
+      - name: Run printer (Rust) tests
+        shell: bash
+        run: cargo test --manifest-path src-tauri/Cargo.toml --lib
+      - name: Build installer
+        shell: bash
+        run: npm run tauri build -- --target ${{ matrix.target }}
+        # To sign later, add the certificate secrets as environment variables here (see COMMERCIAL_GUIDE.md).
+      - name: Collect installers
+        shell: bash
+        run: |
+          mkdir -p installers
+          B="src-tauri/target/${{ matrix.target }}/release/bundle"
+          find "$B" -type f \( -name "*.dmg" -o -name "*-setup.exe" -o -name "*.msi" \) -exec cp {} installers/ \;
+          ls -la installers
+          test -n "$(ls installers)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: msingi-${{ matrix.name }}
+          path: installers/*
+          if-no-files-found: error

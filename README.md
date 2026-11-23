@@ -59,4 +59,3 @@ See `MILESTONE_V0.6.6.md`.
 
 ## v0.6.5 Employee Register & Payroll Controls
 See `MILESTONE_V0.6.5.md` for the new employee register, monthly payroll selection controls, known boundaries and acceptance tests.
-# Msingi_accountingv0.13.9

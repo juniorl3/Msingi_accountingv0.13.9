@@ -1,0 +1,49 @@
+# Builds the Windows installer (.exe and .msi) for Msingi Accounting in the cloud.
+# Use: Actions tab -> "Build Windows installer" -> Run workflow. Download the files at the bottom of the finished run.
+# The installer is not code signed, so Windows SmartScreen may warn: choose More info, then Run anyway.
+name: Build Windows installer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Install npm packages
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
+      - name: Run tests
+        shell: bash
+        run: |
+          for t in tests/*.test.ts; do echo "== $t"; node --experimental-strip-types "$t"; done
+      - name: Run printer (Rust) tests
+        shell: bash
+        run: cargo test --manifest-path src-tauri/Cargo.toml --lib
+      - name: Build installer
+        shell: bash
+        run: npm run tauri build -- --target x86_64-pc-windows-msvc
+      - name: Collect installers
+        shell: bash
+        run: |
+          mkdir -p installers
+          B="src-tauri/target/x86_64-pc-windows-msvc/release/bundle"
+          find "$B" -type f \( -name "*-setup.exe" -o -name "*.msi" \) -exec cp {} installers/ \;
+          ls -la installers
+          test -n "$(ls installers)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: msingi-windows
+          path: installers/*
+          if-no-files-found: error

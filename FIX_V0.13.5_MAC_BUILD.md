@@ -1,0 +1,2 @@
+# v0.13.5 — Mac/Windows build fix
+The v0.13.4 build stopped with `Module './About' has no exported member 'Legal'`. Two files, `about.ts` and `About.tsx`, differ only by letter case, which Mac and Windows treat as the same name. The data file is now `src/aboutInfo.ts`. A new test (`tests/imports.test.ts`) fails on any such clash and on any import whose letter case does not match the real file, so this cannot come back unnoticed.

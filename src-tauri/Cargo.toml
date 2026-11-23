@@ -1,0 +1,23 @@
+[package]
+name = "msingi_accounting"
+version = "0.13.9"
+description = "Offline-first small business accounting"
+authors = ["GTN Global Network"]
+publish = false
+edition = "2021"
+
+[lib]
+name = "msingi_accounting_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2"

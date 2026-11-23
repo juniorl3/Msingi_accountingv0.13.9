@@ -1,0 +1,56 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Msingi Accounting",
+  "version": "0.13.9",
+  "identifier": "com.msingi.accounting",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Msingi Accounting",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 700,
+        "minHeight": 500
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Business",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "copyright": "\u00a9 2026 GTN Global Network. All rights reserved.",
+    "shortDescription": "Offline-first accounting and point of sale for small businesses",
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    },
+    "windows": {
+      "webviewInstallMode": {
+        "type": "offlineInstaller"
+      },
+      "nsis": {
+        "installMode": "both",
+        "languages": [
+          "English"
+        ]
+      }
+    },
+    "publisher": "GTN Global Network",
+    "longDescription": "Msingi Accounting by GTN Global Network, Arusha, Tanzania. Offline accounting, point of sale, stock, VAT and payroll for small businesses. Owner and developer: GTN Global Network."
+  }
+}

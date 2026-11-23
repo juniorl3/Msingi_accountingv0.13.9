@@ -1,0 +1,14 @@
+Msingi Accounting
+Copyright (c) 2026 GTN Global Network. All rights reserved.
+
+Owner and developer:  GTN Global Network
+Address:              Arusha, Tanzania
+
+This software and its documentation are the property of GTN Global Network.
+It is licensed, not sold. Use is permitted only under a written licence
+agreement or a valid licence key issued by GTN Global Network. Copying,
+modifying, reverse engineering or redistributing it without written permission
+is not allowed.
+
+The software is provided as is. It is not connected to the Tanzania Revenue
+Authority (TRA) and does not issue fiscal receipts.
